@@ -9,6 +9,7 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 import { DashBoard } from "./src/screens/Dashboard";
+import { Register } from "./src/screens/Register";
 
 export default function App() {
   const [fontsLoading] = useFonts({
@@ -23,7 +24,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <DashBoard />
+      <Register />
     </ThemeProvider>
   );
 }
