@@ -8,7 +8,7 @@ import {
   Poppins_500Medium,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
-import { DashBoard } from "./src/screens";
+import { DashBoard } from "./src/screens/Dashboard";
 
 export default function App() {
   const [fontsLoading] = useFonts({
