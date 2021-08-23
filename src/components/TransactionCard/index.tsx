@@ -10,22 +10,25 @@ import {
   TransactionName,
   TransactionDate,
 } from "./styles";
+
 interface Transaction {
   name: string;
   icon: string;
 }
 
-interface IProps {
-  data: {
-    type: "positive" | "negative";
-    title: string;
-    amount: string;
-    transactionType: Transaction;
-    date: string;
-  };
+export interface TransactionCardProps {
+  type: "positive" | "negative";
+  title: string;
+  amount: string;
+  transactionType: Transaction;
+  date: string;
 }
 
-export function TransactionCard({ data }: IProps) {
+interface Props {
+  data: TransactionCardProps;
+}
+
+export function TransactionCard({ data }: Props) {
   return (
     <Container>
       <Title>{data.title}</Title>
