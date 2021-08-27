@@ -1,15 +1,15 @@
 import React from "react";
-import { View } from "react-native";
 
 import { Container, Category, Icon } from "./styles";
 
 interface Props {
   title: string;
+  onPress: () => void;
 }
 
-export function CategoryType({ title, ...rest }: Props) {
+export function CategorySelectButton({ title, onPress, ...rest }: Props) {
   return (
-    <Container {...rest}>
+    <Container {...rest} onPress={onPress}>
       <Category>{title}</Category>
       <Icon name="chevron-down" />
     </Container>
