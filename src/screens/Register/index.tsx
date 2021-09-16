@@ -33,11 +33,11 @@ const Schema = Yup.object().shape({
 
 export function Register() {
   const [transactionType, setTransactionType] = useState("");
-  const [categoryOpenModal, setCategoryOpenModal] = useState(false);
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
   const [category, setCategory] = useState({
-    key: "Categoria",
-    name: "category",
+    key: "category",
+    name: "Categoria",
   });
 
   const {
@@ -50,11 +50,14 @@ export function Register() {
     setTransactionType(type);
   }
 
-  function handleCloseModalCategory() {
-    setCategoryOpenModal(false);
-  }
   function handleOpenModalCategory() {
-    setCategoryOpenModal(true);
+    console.log(categoryModalOpen);
+    setCategoryModalOpen(true);
+  }
+
+  function handleCloseModalCategory() {
+    console.log(categoryModalOpen);
+    setCategoryModalOpen(false);
   }
 
   function handleRegister(form: FormData) {
@@ -62,9 +65,9 @@ export function Register() {
       return Alert.alert("O tipo de transação é obrigatório");
     }
 
-    if (category.name === "category") {
-      return Alert.alert("Selecione uma categoria");
-    }
+    // if (category.key === "category") {
+    //   return Alert.alert("Selecione uma categoria");
+    // }
     const data = {
       name: form.name,
       amount: form.amount,
@@ -118,7 +121,7 @@ export function Register() {
           </Fields>
 
           <Button title="Enviar" onPress={handleSubmit(handleRegister)} />
-          <Modal visible={categoryOpenModal}>
+          <Modal visible={categoryModalOpen}>
             <CategorySelect
               category={category}
               setCategory={setCategory}
