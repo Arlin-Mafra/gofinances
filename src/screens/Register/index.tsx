@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert, Keyboard, Modal, TouchableWithoutFeedback } from "react-native";
 import * as Yup from "yup";
@@ -8,6 +8,9 @@ import { CategorySelect } from "../../components/Form/CategorySelect";
 import { CategorySelectButton } from "../../components/Form/CategorySelectButton";
 import InputForm from "../../components/Form/InputForm";
 import TransactionTypeButton from "../../components/Form/TransactionTypeButton";
+import uuid from "react-native-uuid";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   Container,
@@ -17,7 +20,6 @@ import {
   Fields,
   TransactionsType,
 } from "./styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface FormData {
   name: string;
@@ -35,7 +37,8 @@ const Schema = Yup.object().shape({
 export function Register() {
   const [transactionType, setTransactionType] = useState("");
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
-  const dataKey = "@gofinances:transactions";
+
+  const navigation = useNavigation();
 
   const [category, setCategory] = useState({
     key: "category",
@@ -45,6 +48,7 @@ export function Register() {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({ resolver: yupResolver(Schema) });
 
@@ -53,16 +57,16 @@ export function Register() {
   }
 
   function handleOpenModalCategory() {
-    console.log(categoryModalOpen);
     setCategoryModalOpen(true);
   }
 
   function handleCloseModalCategory() {
-    console.log(categoryModalOpen);
     setCategoryModalOpen(false);
   }
 
   async function handleRegister(form: FormData) {
+    const dataKey = "@gofinances:transactions";
+
     if (!transactionType) {
       return Alert.alert("O tipo de transação é obrigatório");
     }
@@ -70,29 +74,33 @@ export function Register() {
     if (category.key === "category") {
       return Alert.alert("Selecione uma categoria");
     }
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
       transactionType,
       category: category.key,
+      date: new Date(),
     };
 
     try {
-      await AsyncStorage.setItem(dataKey, JSON.stringify(data));
+      const data = await AsyncStorage.getItem(dataKey);
+      const currentData = data ? JSON.parse(data) : [];
+
+      const dataFormatted = [...currentData, newTransaction];
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
+
+      reset();
+      setTransactionType("");
+      setCategory({ key: "category", name: "Categoria" });
+
+      navigation.goBack();
     } catch (error) {
       console.log(error);
       Alert.alert("Houve um erro ao salvar a transação!");
     }
   }
-
-  useEffect(() => {
-    async function loadData() {
-      const data = await AsyncStorage.getItem(dataKey);
-      console.log(JSON.parse(data!));
-    }
-
-    loadData();
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
