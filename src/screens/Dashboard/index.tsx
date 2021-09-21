@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { HighilightCard } from "../../components/HighilightCard";
@@ -23,6 +23,7 @@ import {
   Title,
   TransactionList,
 } from "./styles";
+import { useFocusEffect } from "@react-navigation/core";
 
 export interface DataListProps extends TransactionCardProps {
   id: string;
@@ -65,6 +66,12 @@ export function DashBoard() {
   useEffect(() => {
     loadTransactions();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadTransactions();
+    }, [])
+  );
   return (
     <Container>
       <Header>

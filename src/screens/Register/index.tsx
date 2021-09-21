@@ -52,7 +52,7 @@ export function Register() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(Schema) });
 
-  function handleTransactionType(type: "up" | "down") {
+  function handleTransactionType(type: "positive" | "negative") {
     setTransactionType(type);
   }
 
@@ -78,7 +78,7 @@ export function Register() {
       id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionType,
+      type: transactionType,
       category: category.key,
       date: new Date(),
     };
@@ -129,14 +129,14 @@ export function Register() {
               <TransactionTypeButton
                 title="Income"
                 type="up"
-                isActive={transactionType === "up"}
-                onPress={() => handleTransactionType("up")}
+                isActive={transactionType === "positive"}
+                onPress={() => handleTransactionType("positive")}
               />
               <TransactionTypeButton
                 title="Outcome"
                 type="down"
-                isActive={transactionType === "down"}
-                onPress={() => handleTransactionType("down")}
+                isActive={transactionType === "negative"}
+                onPress={() => handleTransactionType("negative")}
               />
             </TransactionsType>
             <CategorySelectButton
