@@ -29,8 +29,21 @@ export interface DataListProps extends TransactionCardProps {
   id: string;
 }
 
+interface HighlightProps {
+  amount: string;
+}
+
+interface HighlightData {
+  entries: HighlightProps;
+  expensives: HighlightProps;
+  total: HighlightProps;
+}
+
 export function DashBoard() {
-  const [data, setData] = useState<DataListProps[]>([]);
+  const [transactions, setTransactions] = useState<DataListProps[]>([]);
+  const [highlightData, setHighlighData] = useState<HighlightData>(
+    {} as HighlightData
+  );
 
   async function loadTransactions() {
     const dataKey = "@gofinances:transactions";
@@ -38,8 +51,17 @@ export function DashBoard() {
 
     const transactions = response ? JSON.parse(response) : [];
 
+    let entriesTotal = 0;
+    let expensivesTotal = 0;
+
     const transactionsFormatted: DataListProps[] = transactions.map(
       (item: DataListProps) => {
+        if (item.type === "positive") {
+          entriesTotal += Number(item.amount);
+        } else {
+          expensivesTotal += Number(item.amount);
+        }
+
         const amount = Number(item.amount).toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
@@ -59,12 +81,37 @@ export function DashBoard() {
         };
       }
     );
-    console.log(transactionsFormatted);
 
-    setData(transactionsFormatted);
+    setTransactions(transactionsFormatted);
+
+    const total = entriesTotal - expensivesTotal;
+
+    setHighlighData({
+      entries: {
+        amount: entriesTotal.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+      },
+      expensives: {
+        amount: expensivesTotal.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+      },
+      total: {
+        amount: total.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+      },
+    });
+    console.log(transactionsFormatted);
   }
   useEffect(() => {
     loadTransactions();
+    // const dataKey = "@gofinances:transactions";
+    // AsyncStorage.removeItem(dataKey);
   }, []);
 
   useFocusEffect(
@@ -96,19 +143,19 @@ export function DashBoard() {
         <HighilightCard
           type="up"
           title="Entradas"
-          amount="R$ 17.400,00"
+          amount={highlightData.entries.amount}
           lastTransaction="Ultima entrada dia 13 de abril"
         />
         <HighilightCard
           type="down"
           title="Saidas"
-          amount="R$ 1.259,00"
+          amount={highlightData.expensives.amount}
           lastTransaction="Ultima saida dia 03 de abril"
         />
         <HighilightCard
           type="total"
           title="Total"
-          amount="R$ 16.141,00"
+          amount={highlightData.total.amount}
           lastTransaction="01 a 05 de abril"
         />
       </HighilightCards>
@@ -116,7 +163,7 @@ export function DashBoard() {
       <Transactions>
         <Title>Listagem</Title>
         <TransactionList
-          data={data}
+          data={transactions}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <TransactionCard data={item} />}
         />
