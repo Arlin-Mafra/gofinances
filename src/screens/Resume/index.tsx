@@ -2,9 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HistoryCard from "../../components/HistoryCard";
 import { categories } from "../../utils/categories";
+import { VictoryPie } from "victory-native";
 
-import { Container, Header, Title, Content } from "./styles";
+import { Container, Header, Title, Content, ChartContainer } from "./styles";
 import { useFocusEffect } from "@react-navigation/core";
+import { RFValue } from "react-native-responsive-fontsize";
+import { useTheme } from "styled-components";
 
 interface TransactionData {
   type: "positive" | "negative";
@@ -27,6 +30,9 @@ export function Resume() {
   const [categoriesTotalList, SetCategoriesTotalList] = useState<
     TotalByCategoryData[]
   >([]);
+
+  const theme = useTheme();
+
   async function loadCategories() {
     const dataKey = "@gofinances:transactions";
     const response = await AsyncStorage.getItem(dataKey);
@@ -91,6 +97,23 @@ export function Resume() {
       <Header>
         <Title>Resumo por Categoria</Title>
       </Header>
+
+      <ChartContainer>
+        <VictoryPie
+          data={categoriesTotalList}
+          colorScale={categoriesTotalList.map((category) => category.color)}
+          style={{
+            labels: {
+              fontSize: RFValue(18),
+              fontWeight: "bold",
+              fill: theme.colors.shape,
+            },
+          }}
+          labelRadius={50}
+          x="percentFormatted"
+          y="total"
+        />
+      </ChartContainer>
       <Content>
         {categoriesTotalList.map((item) => (
           <HistoryCard
