@@ -11,7 +11,7 @@ interface Props {
 
 export function HistoryCard({ color, title, amount }: Props) {
   return (
-    <Container color="red">
+    <Container color={color}>
       <Title>{title}</Title>
       <Amount>{amount}</Amount>
     </Container>
