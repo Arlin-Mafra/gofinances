@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HistoryCard from "../../components/HistoryCard";
 import { categories } from "../../utils/categories";
 
 import { Container, Header, Title, Content } from "./styles";
+import { useFocusEffect } from "@react-navigation/core";
 
 interface TransactionData {
   type: "positive" | "negative";
@@ -18,6 +19,8 @@ interface TotalByCategoryData {
   name: string;
   total: string;
   color: string;
+  percent: number;
+  percentFormatted: string;
 }
 
 export function Resume() {
@@ -31,6 +34,13 @@ export function Resume() {
 
     const expensives = responseFormatted.filter(
       (expensive: TransactionData) => expensive.type === "negative"
+    );
+
+    const expencivesTotal = expensives.reduce(
+      (acumulator: number, expensive: TransactionData) => {
+        return acumulator + Number(expensive.amount);
+      },
+      0
     );
 
     const totalByCategory: TotalByCategoryData[] = [];
@@ -49,12 +59,17 @@ export function Resume() {
           style: "currency",
           currency: "BRL",
         });
+        const percent = (categorySum / expencivesTotal) * 100;
+        const percentFormatted = `${percent.toFixed(0)}%`;
         totalByCategory.push({
           key: category.key,
           name: category.name,
           color: category.color,
           total,
+          percent,
+          percentFormatted,
         });
+        console.log(totalByCategory);
       }
     });
 
@@ -64,6 +79,12 @@ export function Resume() {
   useEffect(() => {
     loadCategories();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadCategories();
+    }, [])
+  );
 
   return (
     <Container>
