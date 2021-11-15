@@ -9,6 +9,7 @@ import {
   Poppins_500Medium,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
+import { AuthProvider } from "./src/hooks/auth";
 import { AppRoutes } from "./src/routes/app.routes";
 import { Signin } from "./src/screens/Signin";
 
@@ -26,7 +27,9 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <Signin />
+        <AuthProvider>
+          <Signin />
+        </AuthProvider>
       </NavigationContainer>
     </ThemeProvider>
   );
