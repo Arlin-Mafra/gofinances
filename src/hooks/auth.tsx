@@ -1,4 +1,10 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import * as Google from "expo-google-app-auth";
 import * as AppleAuthentication from "expo-apple-authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,12 +23,18 @@ interface IAuthProps {
   user: User;
   signInWithGoogle(): Promise<void>;
   signInWithApple(): Promise<void>;
+  signOut(): Promise<void>;
+  userStorageLoading: boolean;
 }
 
 const AuthContext = createContext({} as IAuthProps);
 
 function AuthProvider({ children }: AuthPrviderProps) {
   const [user, setUser] = useState<User>({} as User);
+
+  const [userStorageLoading, setUserStorageLoading] = useState(true);
+
+  const userDataStorage = "@gofinances:user";
 
   async function signInWithGoogle() {
     try {
@@ -66,22 +78,43 @@ function AuthProvider({ children }: AuthPrviderProps) {
       });
 
       if (credentials) {
+        const name = credentials.fullName.givenName;
+        const photo = `https://ui-avatars.com/api/?name=${name}`;
+
         const userLogged = {
           id: credentials.user,
           email: credentials.email,
-          name: credentials.fullName.givenName,
-          photo: undefined,
+          name,
+          photo,
         };
         setUser(userLogged);
-        await AsyncStorage.setItem(
-          "@gofinances:user",
-          JSON.stringify(userLogged)
-        );
+        await AsyncStorage.setItem(userDataStorage, JSON.stringify(userLogged));
       }
     } catch (error) {
       throw new Error(error);
     }
   }
+
+  async function signOut() {
+    setUser({} as User);
+
+    await AsyncStorage.removeItem(userDataStorage);
+  }
+
+  useEffect(() => {
+    async function loadUserStorageData() {
+      const userStoraged = await AsyncStorage.getItem(userDataStorage);
+
+      if (userStoraged) {
+        const userLogged = JSON.parse(userStoraged) as User;
+        setUser(userLogged);
+      }
+
+      setUserStorageLoading(false);
+    }
+
+    loadUserStorageData();
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -89,6 +122,8 @@ function AuthProvider({ children }: AuthPrviderProps) {
         user,
         signInWithGoogle,
         signInWithApple,
+        signOut,
+        userStorageLoading,
       }}
     >
       {children}

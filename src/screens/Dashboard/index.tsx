@@ -27,6 +27,7 @@ import {
 } from "./styles";
 import { useFocusEffect } from "@react-navigation/core";
 import styled, { useTheme } from "styled-components";
+import { useAuth } from "../../hooks/auth";
 
 export interface DataListProps extends TransactionCardProps {
   id: string;
@@ -51,6 +52,7 @@ export function DashBoard() {
   );
 
   const theme = useTheme();
+  const { signOut, user } = useAuth();
 
   function getLastTransactionDate(
     collection: DataListProps[],
@@ -174,15 +176,15 @@ export function DashBoard() {
               <UserInfo>
                 <Photo
                   source={{
-                    uri: "https://avatars.githubusercontent.com/u/55093136?v=4",
+                    uri: user.photo,
                   }}
                 />
                 <User>
                   <UserGretting>Olá, </UserGretting>
-                  <UserName>Arlin</UserName>
+                  <UserName>{user.name}</UserName>
                 </User>
               </UserInfo>
-              <LogoutButton onPress={() => {}}>
+              <LogoutButton onPress={signOut}>
                 <Icon name="power" />
               </LogoutButton>
             </UserWrapper>
