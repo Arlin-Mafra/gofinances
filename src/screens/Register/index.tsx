@@ -20,6 +20,7 @@ import {
   Fields,
   TransactionsType,
 } from "./styles";
+import { useAuth } from "../../hooks/auth";
 
 interface FormData {
   name: string;
@@ -39,6 +40,7 @@ export function Register() {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
   const navigation = useNavigation();
+  const { user } = useAuth();
 
   const [category, setCategory] = useState({
     key: "category",
@@ -65,7 +67,7 @@ export function Register() {
   }
 
   async function handleRegister(form: FormData) {
-    const dataKey = "@gofinances:transactions";
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
 
     if (!transactionType) {
       return Alert.alert("O tipo de transação é obrigatório");
