@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { RFValue } from "react-native-responsive-fontsize";
 import LogoSvg from "../../assets/logo.svg";
 import GoogleLogo from "../../assets/google.svg";
@@ -16,7 +16,7 @@ import {
   Footer,
   FooterWrapper,
 } from "./styles";
-import { ActivityIndicator, Alert } from "react-native";
+import { ActivityIndicator, Alert, Platform } from "react-native";
 import theme from "../../global/styles/theme";
 
 export function Signin() {
@@ -70,11 +70,13 @@ export function Signin() {
             svg={GoogleLogo}
             onPress={handleSignInWithGoogle}
           />
-          <SigninSocialButton
-            title="Entrar com a Apple"
-            svg={AppleLogo}
-            onPress={handleSignInWithApple}
-          />
+          {Platform.OS === "ios" && (
+            <SigninSocialButton
+              title="Entrar com a Apple"
+              svg={AppleLogo}
+              onPress={handleSignInWithApple}
+            />
+          )}
         </FooterWrapper>
 
         {isLoading && (
