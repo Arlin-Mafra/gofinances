@@ -51,7 +51,7 @@ function AuthProvider({ children }: AuthPrviderProps) {
           id: result.user.id,
           email: result.user.email,
           name: result.user.name,
-          photo: result.user.photoUrl,
+          photo: result.user.photoUrl!,
         };
 
         setUser(userLogged);
@@ -61,7 +61,7 @@ function AuthProvider({ children }: AuthPrviderProps) {
           JSON.stringify(userLogged)
         );
 
-        console.log(userLogged);
+        // console.log(userLogged);
       }
     } catch (error) {
       throw new Error(error);
