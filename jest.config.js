@@ -14,7 +14,7 @@ module.exports = {
   
     collectCoverage: true,
     collectCoverageFrom: [
-      "src/**/.tsx", 
+      "src/**/*.tsx", 
       "!src/**/*.spec.tsx"
     ],
     coverageReporters: [
