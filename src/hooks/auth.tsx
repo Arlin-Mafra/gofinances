@@ -5,9 +5,11 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import * as Google from "expo-google-app-auth";
+import * as AuthSession from 'expo-auth-session'
 import * as AppleAuthentication from "expo-apple-authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 interface AuthPrviderProps {
   children: ReactNode;
 }
@@ -38,7 +40,18 @@ function AuthProvider({ children }: AuthPrviderProps) {
 
   async function signInWithGoogle() {
     try {
-      const result = await Google.logInAsync({
+
+      const CLIENT_ID = '147867004203-lspjp50ej0sp6farjfjs1c2s1o4pl7tn.apps.googleusercontent.com'
+      const REDIRECT_URI='https://auth.expo.io/@arlinmafra/gofinances'
+      const RESPONSE_TYPE = 'token'
+      const SCOPE = encodeURI('profile email')
+
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`
+
+      const response = await AuthSession.startAsync({authUrl})
+
+      console.log(response)
+     /*  const result = await Google.logInAsync({
         iosClientId:
           "147867004203-f2jt923mlj3cnb5b804kmdq2prjf3cm6.apps.googleusercontent.com",
         androidClientId:
@@ -53,17 +66,18 @@ function AuthProvider({ children }: AuthPrviderProps) {
           name: result.user.name,
           photo: result.user.photoUrl!,
         };
-
-        setUser(userLogged);
+ */
+ /*        setUser(userLogged);
 
         await AsyncStorage.setItem(
           "@gofinances:user",
           JSON.stringify(userLogged)
-        );
+        ); */
 
         // console.log(userLogged);
-      }
+      //}
     } catch (error) {
+      console.log(error)
       throw new Error(error);
     }
   }
