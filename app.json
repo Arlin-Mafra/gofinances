@@ -2,7 +2,8 @@
   "expo": {
     "name": "gofinances",
     "slug": "gofinances",
-    "scheme":"gofinances",
+    "scheme": "gofinances",
+    "owner": "arlinmafra",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
@@ -11,5 +12,6 @@
       "image": "./src/assets/splash.png"
     }
   },
-  "name": "gofinances"
+  "name": "gofinances",
+  "displayName":"gofinances"
 }

@@ -14,6 +14,13 @@ interface AuthPrviderProps {
   children: ReactNode;
 }
 
+interface AuthorizationResponse {
+  params: {
+    access_token: string
+  }
+  type: string
+}
+
 interface User {
   id: string;
   name: string;
@@ -48,34 +55,25 @@ function AuthProvider({ children }: AuthPrviderProps) {
 
       const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`
 
-      const response = await AuthSession.startAsync({authUrl})
+      const {type,params} = await AuthSession.startAsync({authUrl}) as AuthorizationResponse
 
-      console.log(response)
-     /*  const result = await Google.logInAsync({
-        iosClientId:
-          "147867004203-f2jt923mlj3cnb5b804kmdq2prjf3cm6.apps.googleusercontent.com",
-        androidClientId:
-          "147867004203-fuslk7ed7u1pa7i8ku4vug1mcfh9ns9u.apps.googleusercontent.com",
-        scopes: ["profile", "email"],
-      });
 
-      if (result.type === "success") {
-        const userLogged = {
-          id: result.user.id,
-          email: result.user.email,
-          name: result.user.name,
-          photo: result.user.photoUrl!,
-        };
- */
- /*        setUser(userLogged);
+      if (type === 'success') {
+        const response = await fetch(
+          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`
 
-        await AsyncStorage.setItem(
-          "@gofinances:user",
-          JSON.stringify(userLogged)
-        ); */
+        )
 
-        // console.log(userLogged);
-      //}
+        const userInfo = await response.json()
+        setUser({
+          id:userInfo.id,
+          email:userInfo.email,
+          name:userInfo.give_name,
+          photo:userInfo.picture
+        })
+      }
+
+     
     } catch (error) {
       console.log(error)
       throw new Error(error);
