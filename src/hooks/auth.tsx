@@ -10,6 +10,10 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
+const { CLIENT_ID } = process.env
+const { REDIRECT_URI } = process.env
+
+
 interface AuthPrviderProps {
   children: ReactNode;
 }
@@ -47,9 +51,6 @@ function AuthProvider({ children }: AuthPrviderProps) {
 
   async function signInWithGoogle() {
     try {
-
-      const CLIENT_ID = '147867004203-lspjp50ej0sp6farjfjs1c2s1o4pl7tn.apps.googleusercontent.com'
-      const REDIRECT_URI='https://auth.expo.io/@arlinmafra/gofinances'
       const RESPONSE_TYPE = 'token'
       const SCOPE = encodeURI('profile email')
 
@@ -65,14 +66,19 @@ function AuthProvider({ children }: AuthPrviderProps) {
         )
 
         const userInfo = await response.json()
-        setUser({
-          id:userInfo.id,
-          email:userInfo.email,
-          name:userInfo.give_name,
-          photo:userInfo.picture
-        })
-      }
+        const name = userInfo.given_name
+        const photo = `https://ui-avatars.com/api/?name=${name}&length=1&bold=true&background=ffffff`
+        const userLogged = {
+          id: userInfo.id,
+          email: userInfo.email,
+          name,
+          photo: userInfo.picture ?? photo
+        }
 
+        setUser(userLogged)
+
+        await AsyncStorage.setItem(userDataStorage, JSON.stringify(userLogged))
+      }
      
     } catch (error) {
       console.log(error)
